@@ -3,11 +3,18 @@ import React from 'react';
 import Navlinks from './Navlinks';
 import Link from 'next/link';
 import { signOut, useSession } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
 
     const { data, isPending } = useSession();
     const user = data?.user;
+    const router = useRouter();
+
+    const handleSignOut = () => {
+        signOut();
+        router.push('/');
+    }
 
     return (
         <div className="navbar sticky top-0 z-50 bg-base-100/80 backdrop-blur-lg border-b border-base-200 shadow-sm px-4 sm:px-8 transition-all">
@@ -43,7 +50,7 @@ const Navbar = () => {
                     <div className="navbar-end flex items-center gap-2 sm:gap-3">
                         <button
                             className="btn btn-primary rounded-full px-5 sm:px-6 font-semibold shadow-md shadow-primary/30 hover:shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5 transition-all"
-                            onClick={() => signOut()}
+                            onClick={handleSignOut}
                         >
                             Sign Out
                         </button>
