@@ -1,4 +1,5 @@
 import NoUser from '@/components/Dashboard/NoUser';
+import Dashboard from '@/components/Dashboard/Dashboard';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import React from 'react';
@@ -11,15 +12,10 @@ const DashBoardPage = async () => {
 
     const user = session?.user;
 
-    if (!user) {
-        return <NoUser />
+    if (user) {
+        return <Dashboard user={user} />
     }
-
-    return (
-        <div>
-            <h2>This is dashing board</h2>
-        </div>
-    );
+    return <NoUser />;
 };
 
 export default DashBoardPage;

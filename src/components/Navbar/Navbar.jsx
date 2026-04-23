@@ -41,7 +41,6 @@ const Navbar = () => {
                 ) :
                 user ? (
                     <div className="navbar-end flex items-center gap-2 sm:gap-3">
-                        <h2>Welcome {user?.name}</h2>
                         <button
                             className="btn btn-primary rounded-full px-5 sm:px-6 font-semibold shadow-md shadow-primary/30 hover:shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5 transition-all"
                             onClick={() => signOut()}
