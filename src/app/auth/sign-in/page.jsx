@@ -1,16 +1,11 @@
-'use client';
-
+"use client";
 import { authClient } from "@/lib/auth-client";
 import { Check, Eye, EyeSlash } from "@gravity-ui/icons";
 import { Button, Description, FieldError, Form, Input, InputGroup, Label, TextField } from "@heroui/react";
-import { set } from "better-auth";
-import { redirect } from "next/dist/server/api-utils";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
-const SignUpPage = () => {
-    const router = useRouter();
+const SignInPage = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -20,19 +15,16 @@ const SignUpPage = () => {
         try {
             const formData = new FormData(e.target);
             const userData = Object.fromEntries(formData.entries());
-
-            const { data, error } = await authClient.signUp.email({
-                name: userData.name,
-                email: userData.email,
-                password: userData.password,
+            const { email, password } = userData;
+            const { data, error } = await authClient.signIn.email({
+                email,
+                password,
+                callbackURL: "/dashboard" // Optional: redirect after sign in
             })
             if (error) {
-                toast.error(error.message || "An error occurred during sign up");
-            }
-            if (data) {
-                toast.success("Account created successfully! Please check your email to verify your account.");
-                e.target.reset();
-                router.push("/auth/sign-in");
+                toast.error(error.message || "An error occurred during sign in");
+            } else if (data) {
+                toast.success("Signed in successfully!");
             }
         } finally {
             setIsSubmitting(false);
@@ -43,21 +35,11 @@ const SignUpPage = () => {
         <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 p-4">
             <div className="card w-full max-w-md bg-base-100 shadow-2xl">
                 <div className="card-body p-6 sm:p-10">
-                    <h2 className="text-3xl font-bold text-center mb-6 text-base-content">Create Account</h2>
+                    <h2 className="text-3xl font-bold text-center mb-6 text-base-content">Welcome Back</h2>
 
-                    <Form
-                        className="flex flex-col gap-5 w-full"
-                        render={(props) => <form {...props} data-custom="foo" />}
-                        onSubmit={onSubmit}
-                    >
-                        <TextField isRequired className="w-full" name="name">
-                            <Label className="font-medium">Full Name</Label>
-                            <Input placeholder="John Doe" size="lg" />
-                        </TextField>
-
+                    <Form className="flex w-full flex-col gap-4" onSubmit={onSubmit}>
                         <TextField
                             isRequired
-                            className="w-full"
                             name="email"
                             type="email"
                             validate={(value) => {
@@ -67,11 +49,10 @@ const SignUpPage = () => {
                                 return null;
                             }}
                         >
-                            <Label className="font-medium">Email</Label>
-                            <Input placeholder="john@example.com" size="lg" />
-                            <FieldError className="text-red-500 text-sm" />
+                            <Label>Email</Label>
+                            <Input placeholder="john@example.com" />
+                            <FieldError />
                         </TextField>
-
                         <TextField
                             isRequired
                             className="w-full"
@@ -110,20 +91,20 @@ const SignUpPage = () => {
                             </Description>
                             <FieldError className="text-red-500 text-sm" />
                         </TextField>
-
-                        <div className="flex flex-col sm:flex-row gap-3 mt-4">
-                            <Button type="submit" color="primary" className="flex-1" size="lg">
+                        <div className="flex gap-2">
+                            <Button type="submit" className='w-full'>
                                 {isSubmitting ? (
                                     <span className="loading loading-spinner text-base-100"></span>
                                 ) : (
-                                    <><Check className="mr-2 size-5" /> Submit</>
+                                    <><Check /> Submit</>
                                 )}
                             </Button>
-                            <Button type="reset" variant="flat" className="flex-1 sm:flex-none" size="lg">
+                            <Button type="reset" variant="secondary">
                                 Reset
                             </Button>
                         </div>
                     </Form>
+
                     <ToastContainer
                         position="top-center"
                         autoClose={3000}
@@ -135,4 +116,4 @@ const SignUpPage = () => {
     );
 };
 
-export default SignUpPage;
+export default SignInPage;

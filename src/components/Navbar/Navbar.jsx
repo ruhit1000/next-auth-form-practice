@@ -1,14 +1,21 @@
+'use client';
 import React from 'react';
 import Navlinks from './Navlinks';
+import Link from 'next/link';
+import { signOut, useSession } from '@/lib/auth-client';
 
 const Navbar = () => {
+
+    const { data, isPending } = useSession();
+    const user = data?.user;
+
     return (
         <div className="navbar sticky top-0 z-50 bg-base-100/80 backdrop-blur-lg border-b border-base-200 shadow-sm px-4 sm:px-8 transition-all">
             <div className="navbar-start">
                 <div className="dropdown">
                     <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden pr-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"> 
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /> 
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
                         </svg>
                     </div>
                     <ul
@@ -17,20 +24,48 @@ const Navbar = () => {
                         <Navlinks />
                     </ul>
                 </div>
-                <a className="btn btn-ghost text-2xl font-extrabold tracking-tight bg-linear-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent hover:bg-transparent">
+                <Link className="btn btn-ghost text-2xl font-extrabold tracking-tight bg-linear-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent hover:bg-transparent" href="/">
                     faceBook
-                </a>
+                </Link>
             </div>
             <div className="navbar-center hidden lg:flex">
                 <ul className="menu menu-horizontal px-1 gap-2 font-medium text-base-content/80">
                     <Navlinks />
                 </ul>
             </div>
-            <div className="navbar-end">
-                <a className="btn btn-primary rounded-full px-6 font-semibold shadow-md shadow-primary/30 hover:shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5 transition-all">
-                    Get Started
-                </a>
-            </div>
+            {   
+                isPending ? (
+                    <div className="navbar-end">
+                        <span className="loading loading-spinner text-primary"></span>
+                    </div>
+                ) :
+                user ? (
+                    <div className="navbar-end flex items-center gap-2 sm:gap-3">
+                        <h2>Welcome {user?.name}</h2>
+                        <button
+                            className="btn btn-primary rounded-full px-5 sm:px-6 font-semibold shadow-md shadow-primary/30 hover:shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5 transition-all"
+                            onClick={() => signOut()}
+                        >
+                            Sign Out
+                        </button>
+                    </div>
+                ) : (
+                    <div className="navbar-end flex items-center gap-2 sm:gap-3">
+                        <Link
+                            href="/auth/sign-in"
+                            className="btn btn-ghost rounded-full px-4 sm:px-5 font-medium hover:bg-base-200/50 transition-colors"
+                        >
+                            Sign In
+                        </Link>
+                        <Link
+                            href="/auth/sign-up"
+                            className="btn btn-primary rounded-full px-5 sm:px-6 font-semibold shadow-md shadow-primary/30 hover:shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5 transition-all"
+                        >
+                            Sign Up
+                        </Link>
+                    </div>
+                )
+            }
         </div>
     );
 };
